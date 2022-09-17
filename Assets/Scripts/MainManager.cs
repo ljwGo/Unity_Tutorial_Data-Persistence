@@ -1,27 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
-    public Brick BrickPrefab;
+    [System.Serializable]
+    public class MaxSocre {
+        public string name;
+        public int maxScore;
+    }
+
     public int LineCount = 6;
+    public Brick BrickPrefab;
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public TextMeshProUGUI bestScoreText;
     public GameObject GameOverText;
-    
+
+    private bool m_GameOver = false;
     private bool m_Started = false;
     private int m_Points;
-    
-    private bool m_GameOver = false;
+    private float initSpeed;
+    private string playerName;
+    private MaxSocre currentMaxScore;
 
-    
     // Start is called before the first frame update
     void Start()
     {
+        initSpeed = GameManager.Instance.InitSpeed;
+        playerName = GameManager.Instance.PlayerName;
+        playerName ??= "undefined";
+        currentMaxScore = LoadMaxScoreInfo();
+        Debug.Log(currentMaxScore);
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -50,7 +66,7 @@ public class MainManager : MonoBehaviour
                 forceDir.Normalize();
 
                 Ball.transform.SetParent(null);
-                Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+                Ball.AddForce(forceDir * initSpeed, ForceMode.VelocityChange);
             }
         }
         else if (m_GameOver)
@@ -72,5 +88,36 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        // 如果当次分数比最高记录高
+        if (currentMaxScore == null || m_Points > currentMaxScore.maxScore) {
+            currentMaxScore = SaveMaxScoreInfo();
+        }
+
+        ShowMaxScoreInfo();
+    }
+
+    public MaxSocre LoadMaxScoreInfo() {
+        string path = Application.persistentDataPath + "\\maxScore.json";
+        if (File.Exists(path)) {
+            string jsonStr = File.ReadAllText(path);
+
+            return JsonUtility.FromJson<MaxSocre>(jsonStr);
+        }
+        return null;
+    }
+
+    public MaxSocre SaveMaxScoreInfo() {
+        MaxSocre maxSocre = new MaxSocre();
+        maxSocre.maxScore = m_Points;
+        maxSocre.name = playerName;
+
+        string jsonStr = JsonUtility.ToJson(maxSocre);
+        File.WriteAllTextAsync(Application.persistentDataPath + "\\maxScore.json", jsonStr);
+        return maxSocre;
+    }
+
+    public void ShowMaxScoreInfo() {
+        bestScoreText.text = $"Best Score:{currentMaxScore.name} : {currentMaxScore.maxScore}";
     }
 }
