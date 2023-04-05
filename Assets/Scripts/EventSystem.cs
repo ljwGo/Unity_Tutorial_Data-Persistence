@@ -20,6 +20,7 @@ public class EventSystem : MonoBehaviour {
     private UIManager uiManager;
 
     void Awake() {
+        // use FindObjectByType function is better
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -8,6 +6,7 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+    // add this line make unity to show in inspector
     [System.Serializable]
     public class MaxSocre {
         public string name;
@@ -34,6 +33,7 @@ public class MainManager : MonoBehaviour
     {
         initSpeed = GameManager.Instance.InitSpeed;
         playerName = GameManager.Instance.PlayerName;
+        // default value assign if varible is null
         playerName ??= "undefined";
         currentMaxScore = LoadMaxScoreInfo();
         Debug.Log(currentMaxScore);
@@ -98,6 +98,7 @@ public class MainManager : MonoBehaviour
     }
 
     public MaxSocre LoadMaxScoreInfo() {
+        // important
         string path = Application.persistentDataPath + "\\maxScore.json";
         if (File.Exists(path)) {
             string jsonStr = File.ReadAllText(path);
@@ -113,6 +114,7 @@ public class MainManager : MonoBehaviour
         maxSocre.name = playerName;
 
         string jsonStr = JsonUtility.ToJson(maxSocre);
+        // async.
         File.WriteAllTextAsync(Application.persistentDataPath + "\\maxScore.json", jsonStr);
         return maxSocre;
     }

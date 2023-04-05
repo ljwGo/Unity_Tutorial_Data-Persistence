@@ -16,6 +16,7 @@ public class DifficultySelect : MonoBehaviour
     }
 
     private void SetDifficulty() {
+        // it is no convenience to push new event
         EventSystem.SetDifficultyEvent(difficulty);
     }
 }

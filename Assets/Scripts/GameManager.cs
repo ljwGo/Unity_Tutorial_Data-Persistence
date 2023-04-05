@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     private AudioSource bgm;
 
+    // It is no clear to know the meaning of value.
     private Dictionary<string, float> levelDifficultMap = new Dictionary<string, float> {
         {"easy", 2f },
         {"medium", 2.5f },
@@ -18,6 +19,7 @@ public class GameManager : MonoBehaviour
     };
 
     private void Awake() {
+        // Single mode
         if (Instance != null) {
             Destroy(gameObject);
             return;
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void OnGameRestartBtnClick() {
+        // hard code
         SceneManager.LoadScene(1);
     }
 
@@ -41,6 +44,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void OnSetDifficultyBtnClick(string difficulty) {
+        // em... Other script to obtain this InitSpeed
         InitSpeed = levelDifficultMap[difficulty];
         GameStart();
     }
